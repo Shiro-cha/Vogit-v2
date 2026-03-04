@@ -5,3 +5,7 @@ version
 auth
 transfert
 integrity
+
+file have version
+    have integrity
+
