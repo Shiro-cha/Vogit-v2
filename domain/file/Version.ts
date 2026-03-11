@@ -1,3 +1,5 @@
+import { Hash } from "./Hash";
+
 class Version {
     id: number;
     fileId: number;
@@ -11,5 +13,6 @@ class Version {
         this.versionNumber = versionNumber;
         this.createdAt = createdAt;
         this.hashs = hashs;
-    }   
+    }  
+     
 }

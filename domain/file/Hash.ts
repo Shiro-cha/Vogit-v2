@@ -1,4 +1,4 @@
-class Hash {
+export class Hash {
     id: number;
     hashValue: string;
     lineNumber: number;

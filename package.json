@@ -1,0 +1,12 @@
+{
+  "name": "Vogit-v2",
+  "version": "1.0.0",
+  "description": "Hello, this is Vogit v2",
+  "main": "main.ts",
+  "scripts": {
+    "start": "node main.ts"
+  },
+  "author": "Shiro",
+  "license": "MIT",
+  "dependencies": {}
+}
