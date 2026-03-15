@@ -16,8 +16,7 @@ class File {
     }
 
     getVersions(): Version[] {
-        // This method would typically fetch versions from a database or storage system
-        // For demonstration purposes, we will return an empty array
+
         return [];
     }
     
