@@ -238,9 +238,6 @@ const version1 = manager.createVersion(content1);
 const version2 = manager.createVersion(content2);
 
 console.log(
-    version1,
-    "\n\n\n",
-    version2,
     "\n\n\n",
     manager.getAllVersionLines(),
     "\n\n\n",
