@@ -4,7 +4,7 @@
   "description": "Hello, this is Vogit v2",
   "main": "main.ts",
   "scripts": {
-    "start": "node main.ts"
+    "start": "bun main.ts"
   },
   "author": "Shiro",
   "license": "MIT",
