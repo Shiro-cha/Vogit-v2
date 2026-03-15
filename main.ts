@@ -5,9 +5,11 @@ Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad mi
 
 class Hash {
     hashValue: string;
+    text: string;
 
-    constructor(hashValue: string) {
+    constructor(hashValue: string, text: string) {
         this.hashValue = hashValue;
+        this.text = text;
     }
 }
 
@@ -33,7 +35,7 @@ function createVersion(content: string, versionNumber: number): Version {
     const lines = content.split('\n');
     for (const line of lines) {
         const hash = createHash(line);
-        version.hashes.push(new Hash(hash));
+        version.hashes.push(new Hash(hash, line));
     }
     return version;
 }
