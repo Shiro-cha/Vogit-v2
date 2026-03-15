@@ -18,7 +18,7 @@ class Version {
     readonly versionNumber: number;
     readonly createdAt: Date;
     readonly updatedAt?: Date;
-    readonly lines: number[]; // line numbers present in this version
+    readonly lines: number[];
 
     constructor(versionNumber: number, createdAt: Date, lines: number[], updatedAt?: Date) {
         this.versionNumber = versionNumber;
@@ -144,7 +144,7 @@ class VersionBuilder {
         const newVersion = new Version(
             newVersionNumber,
             new Date(),
-            [], // will be filled below
+            [], 
             undefined
         );
 
@@ -155,31 +155,24 @@ class VersionBuilder {
             const lineContent = lines[i];
             const hashValue = computeHash(lineContent);
 
-            // Look for an existing Hash object, otherwise create and store it
             let hash = this.hashRepo.findByValue(hashValue);
             if (!hash) {
                 hash = new Hash(hashValue, lineContent);
                 this.hashRepo.add(hash);
             }
 
-            // Check if this line already existed in the previous version with the same hash
             if (lastVersion) {
                 const previousLine = this.versionLineRepo.findByVersionAndLine(lastVersion.versionNumber, lineNumber);
                 if (previousLine && previousLine.hash === hashValue) {
-                    // Line unchanged – no new VersionLine needed, but the line number is still present in the new version
-                    lineNumbersPresent.push(lineNumber);
                     continue;
                 }
             }
 
-            // Line is new or changed: create a VersionLine
             const versionLine = new VersionLine(newVersion, lineNumber, hashValue);
             this.versionLineRepo.add(versionLine);
             lineNumbersPresent.push(lineNumber);
         }
 
-        // Update the version's lines array
-        // (since Version is immutable, we need to create a new instance with the lines)
         const finalVersion = new Version(
             newVersion.versionNumber,
             newVersion.createdAt,
