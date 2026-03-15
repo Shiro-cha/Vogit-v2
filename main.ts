@@ -167,7 +167,7 @@ class VersionBuilder {
                     continue;
                 }
             }
-
+            newVersion.lines.push(lineNumber);
             const versionLine = new VersionLine(newVersion, lineNumber, hashValue);
             this.versionLineRepo.add(versionLine);
             lineNumbersPresent.push(lineNumber);
