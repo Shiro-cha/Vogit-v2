@@ -44,7 +44,7 @@ function hashExists(hash: string, hashList: Hash[]): Hash | null {
     return hashList.find(h => h.hashValue === hash) || null;
 }
 
-const hashList: Hash[] = [];
+var hashList: Hash[] = [];
 const version1 = createVersion(content, 1, hashList);
 const version2 = createVersion(content, 2, hashList);
 console.log(version1.hashes);
