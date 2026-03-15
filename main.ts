@@ -229,7 +229,7 @@ A
 C`;
 const content2 = `B
 A
-C
+A
 D`;
 
 const manager = new VersionManager();
