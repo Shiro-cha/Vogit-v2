@@ -1,7 +1,17 @@
 import * as crypto from 'crypto';
 
-const content = `lorem ipsum dolor sit amet, consectetur adipiscing elit. 
-Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.`;
+const content1 = `lorem ipsum dolor sit amet, consectetur adipiscing elit. 
+Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
+Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. 
+Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. 
+Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.`;
+
+const content2 = `lorem ipsum dolor sit amet, consectetur adipiscing Elit. 
+Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
+Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris 8isi ut aliquip ex ea commodo consequat. 
+Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. 
+Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.`;
+
 
 class Hash {
     hashValue: string;
@@ -50,8 +60,8 @@ function hashExists(hash: string, hashList: Hash[]): Hash | null {
 }
 
 var hashList: Hash[] = [];
-const version1 = createVersion(content, 1, hashList);
-const version2 = createVersion(content, 2, hashList);
+const version1 = createVersion(content1, 1, hashList);
+const version2 = createVersion(content2, 2, hashList);
 console.log(version1.hashes);
 console.log(version2.hashes);
 console.log(hashList);
