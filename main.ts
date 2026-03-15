@@ -30,15 +30,23 @@ class Version {
 function createHash(content: string): string {
     return crypto.createHash('sha256').update(content).digest('hex');
 }
-function createVersion(content: string, versionNumber: number): Version {
+
+function createVersion(content: string, versionNumber: number, hashes: Hash[]): Version {
     const version = new Version(versionNumber, new Date());
     const lines = content.split('\n');
     for (const line of lines) {
         const hash = createHash(line);
-        version.hashes.push(new Hash(hash, line));
+        version.hashes.push(hashExists(hash, hashes) || new Hash(hash, line));
     }
     return version;
 }
+function hashExists(hash: string, hashList: Hash[]): Hash | null {
+    return hashList.find(h => h.hashValue === hash) || null;
+}
 
-const version1 = createVersion(content, 1);
-console.log(version1);
+const hashList: Hash[] = [];
+const version1 = createVersion(content, 1, hashList);
+const version2 = createVersion(content, 2, hashList);
+console.log(version1.hashes);
+console.log(version2.hashes);
+console.log(hashList);
