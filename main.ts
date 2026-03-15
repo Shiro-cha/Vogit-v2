@@ -32,8 +32,8 @@ class Version {
 class VersionLine{
     version: Version;
     lineNumber: number;
-    hash: Hash;
-    constructor(version: Version, lineNumber: number, hash: Hash) {
+    hash: string;
+    constructor(version: Version, lineNumber: number, hash: string) {
         this.version = version;
         this.lineNumber = lineNumber;
         this.hash = hash;
@@ -63,7 +63,7 @@ function buildVersion(versionList: Version[], lines: string[],versionLines: Vers
         
         for (let i = 0; i < lines.length; i++) {
             const hash = getStringHash(lines[i]);
-            const versionLine = new VersionLine(version, i + 1, hashExists(hash, hashList) || createHash(hashList, hash, lines[i]));
+            const versionLine = new VersionLine(version, i + 1, hashExists(hash, hashList)?.hashValue || createHash(hashList, hash, lines[i]).hashValue);
             version.lines.push(versionLine.lineNumber);
             versionLines.push(versionLine);
         }
@@ -78,7 +78,7 @@ function buildVersion(versionList: Version[], lines: string[],versionLines: Vers
             const lastVersionLine = versionLines.find(vl => vl.lineNumber === currentLine + 1 && vl.version.versionNumber === lastVersionNumber);
             const lastHash = lastVersionLine?.hash.hashValue;
             if (lastHash !== hash) {
-                const versionLine = new VersionLine(version, currentLine + 1, hashExists(hash, hashList) || createHash(hashList, hash, lines[i]));
+                const versionLine = new VersionLine(version, currentLine + 1, hashExists(hash, hashList)?.hashValue || createHash(hashList, hash, lines[i]).hashValue);
                 version.lines.push(versionLine.lineNumber);
                 versionLines.push(versionLine);
             }     
