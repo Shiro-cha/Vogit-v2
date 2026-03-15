@@ -231,8 +231,13 @@ class VersionManager {
 // Usage example (identical output to original code)
 // ----------------------------------------------------------------------
 
-const content1 = `B`;
-const content2 = `B`;
+const content1 = `B
+A
+C`;
+const content2 = `B
+A
+C
+D`;
 
 const manager = new VersionManager();
 
