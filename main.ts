@@ -27,16 +27,21 @@ class Version {
     }
     
 }
-function createHash(content: string): string {
+function getStringHash(content: string): string {
     return crypto.createHash('sha256').update(content).digest('hex');
+}
+
+function createHash(hashlist: Hash[],hash: string, text: string): Hash {
+    hashlist.push(new Hash(hash, text));
+    return hashlist[hashlist.length - 1];
 }
 
 function createVersion(content: string, versionNumber: number, hashes: Hash[]): Version {
     const version = new Version(versionNumber, new Date());
     const lines = content.split('\n');
     for (const line of lines) {
-        const hash = createHash(line);
-        version.hashes.push(hashExists(hash, hashes) || new Hash(hash, line));
+        const hash = getStringHash(line);
+        version.hashes.push(hashExists(hash, hashes) || createHash(hashes, hash, line));
     }
     return version;
 }
