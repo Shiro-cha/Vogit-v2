@@ -17,7 +17,7 @@ class Version {
     versionNumber: number;
     createdAt: Date;
     updatedAt?: Date;
-    hashes: Hash[];
+    hashes: string[];
 
     constructor(versionNumber: number, createdAt: Date, updatedAt?: Date) {
         this.versionNumber = versionNumber;
@@ -41,7 +41,7 @@ function createVersion(content: string, versionNumber: number, hashes: Hash[]): 
     const lines = content.split('\n');
     for (const line of lines) {
         const hash = getStringHash(line);
-        version.hashes.push(hashExists(hash, hashes) || createHash(hashes, hash, line));
+        version.hashes.push(hashExists(hash, hashes)?.hashValue || createHash(hashes, hash, line).hashValue);
     }
     return version;
 }
