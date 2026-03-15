@@ -2,7 +2,7 @@ import * as crypto from 'crypto';
 
 const content1 = `B`;
 
-const content2 = `A`;
+const content2 = `B`;
 
 
 class Hash {
