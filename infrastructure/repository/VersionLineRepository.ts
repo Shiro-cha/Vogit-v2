@@ -1,6 +1,6 @@
 import { VersionLine } from "../../domain/file/entities/VersionLine";
 
-class VersionLineRepository implements VersionLineRepository {
+export class VersionLineRepository implements VersionLineRepository {
     private readonly versionLines: VersionLine[] = [];
 
     findByVersionAndLine(versionNumber: number, lineNumber: number): VersionLine | undefined {

@@ -4,7 +4,7 @@ import { Hash } from "../../domain/file/Hash";
 import { IHashRepository } from "../../domain/file/interfaces/IHashRepository";
 import { IVersionRepository } from "../../domain/file/interfaces/IVersionRepository";
 
-class VersionBuilder {
+export class VersionBuilder {
     constructor(
         private readonly hashRepo: IHashRepository,
         private readonly versionRepo: IVersionRepository,
