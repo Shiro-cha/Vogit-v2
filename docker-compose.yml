@@ -8,7 +8,7 @@ services:
       - .:/app
     environment:
       - DB_URI=postgresql://vogit_user:vogit_password@db:5432/vogit_db
-    command: npm run start
+    command: bun run start
     depends_on:
       - db
     restart: always
