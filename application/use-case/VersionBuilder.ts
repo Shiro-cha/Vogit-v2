@@ -4,12 +4,13 @@ import { VersionLine } from "../../domain/file/entities/VersionLine";
 import { IHashRepository } from "../../domain/file/interfaces/IHashRepository";
 import { IVersionRepository } from "../../domain/file/interfaces/IVersionRepository";
 import { computeHash } from "../../infrastructure/utils/hashManager";
+import { IVersionLineRepository } from "../../domain/file/interfaces/IVersionLineRepository";
 
 export class VersionBuilder {
     constructor(
         private readonly hashRepo: IHashRepository,
         private readonly versionRepo: IVersionRepository,
-        private readonly versionLineRepo: IVersionRepository
+        private readonly versionLineRepo: IVersionLineRepository
     ) {}
 
     /**
