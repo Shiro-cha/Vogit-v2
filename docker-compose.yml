@@ -1,0 +1,27 @@
+version: 1.0
+
+services:
+  app:
+    container_name: vogit
+    build: .
+    volumes:
+      - .:/app
+    environment:
+      - DB_URI=postgresql://vogit_user:vogit_password@db:5432/vogit_db
+    command: npm run start
+    depends_on:
+      - db
+    restart: always
+  db:
+    image: postgres:latest
+    container_name: vogit-db
+    environment:
+      POSTGRES_USER: vogit_user
+      POSTGRES_PASSWORD: vogit_password
+      POSTGRES_DB: vogit_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - vogit_db_data:/var/lib/postgresql/data
+volumes:
+  vogit_db_data:

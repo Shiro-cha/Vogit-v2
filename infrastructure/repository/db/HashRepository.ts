@@ -1,5 +1,5 @@
-import { Hash } from "../../domain/file/entities/Hash";
-import { IHashRepository } from "../../domain/file/interfaces/IHashRepository";
+import { Hash } from "../../../domain/file/entities/Hash";
+import { IHashRepository } from "../../../domain/file/interfaces/IHashRepository";
 
 export class HashRepository implements IHashRepository {
     private readonly hashes: Hash[] = [];

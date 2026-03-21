@@ -3,11 +3,11 @@ import { VersionLine } from "../../domain/file/entities/VersionLine";
 import { Hash } from "../../domain/file/entities/Hash";
 import { IHashRepository } from "../../domain/file/interfaces/IHashRepository";
 import { IVersionRepository } from "../../domain/file/interfaces/IVersionRepository";
-import { HashRepository } from "../../infrastructure/repository/HashRepository";
-import { VersionRepository } from "../../infrastructure/repository/VersionRepository";
+import { HashRepository } from "../../infrastructure/repository/in-memory/HashRepository";
+import { VersionRepository } from "../../infrastructure/repository/in-memory/VersionRepository";
 import { VersionBuilder } from "./VersionBuilder";
 import { IVersionLineRepository } from "../../domain/file/interfaces/IVersionLineRepository";
-import { VersionLineRepository } from "../../infrastructure/repository/VersionLineRepository";
+import { VersionLineRepository } from "../../infrastructure/repository/in-memory/VersionLineRepository";
 
 export class VersionManager {
     private readonly hashRepo: IHashRepository = new HashRepository();
@@ -24,7 +24,7 @@ export class VersionManager {
         return this.builder.buildFromLines(lines);
     }
 
-    // Expose repositories for inspection (e.g., console.log)
+
     getAllHashes(): Hash[] {
         return this.hashRepo.getAll();
     }

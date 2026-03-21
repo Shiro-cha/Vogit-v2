@@ -1,4 +1,4 @@
-class File {
+export class File {
     id: number;
     name: string;
     size: number;
@@ -15,10 +15,6 @@ class File {
         this.updatedAt = updatedAt;
     }
 
-    getVersions(): Version[] {
-
-        return [];
-    }
     
 
 }
