@@ -6,11 +6,13 @@ import { IVersionRepository } from "../../domain/file/interfaces/IVersionReposit
 import { HashRepository } from "../../infrastructure/repository/HashRepository";
 import { VersionRepository } from "../../infrastructure/repository/VersionRepository";
 import { VersionBuilder } from "./VersionBuilder";
+import { IVersionLineRepository } from "../../domain/file/interfaces/IVersionLineRepository";
+import { VersionLineRepository } from "../../infrastructure/repository/VersionLineRepository";
 
 export class VersionManager {
     private readonly hashRepo: IHashRepository = new HashRepository();
     private readonly versionRepo: IVersionRepository = new VersionRepository();
-    private readonly versionLineRepo: IVersionRepository = new VersionRepository();
+    private readonly versionLineRepo: IVersionLineRepository = new VersionLineRepository();
     private readonly builder: VersionBuilder;
 
     constructor() {
