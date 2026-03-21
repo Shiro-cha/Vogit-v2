@@ -5,8 +5,9 @@ import { IHashRepository } from "../../domain/file/interfaces/IHashRepository";
 import { IVersionRepository } from "../../domain/file/interfaces/IVersionRepository";
 import { HashRepository } from "../../infrastructure/repository/HashRepository";
 import { VersionRepository } from "../../infrastructure/repository/VersionRepository";
+import { VersionBuilder } from "./VersionBuilder";
 
-class VersionManager {
+export class VersionManager {
     private readonly hashRepo: IHashRepository = new HashRepository();
     private readonly versionRepo: IVersionRepository = new VersionRepository();
     private readonly versionLineRepo: IVersionRepository = new VersionRepository();
