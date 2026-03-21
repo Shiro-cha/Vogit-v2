@@ -1,6 +1,6 @@
 import { Version } from "../../domain/file/entities/Version";
 import { VersionLine } from "../../domain/file/entities/VersionLine";
-import { Hash } from "../../domain/file/Hash";
+import { Hash } from "../../domain/file/entities/Hash";
 import { IHashRepository } from "../../domain/file/interfaces/IHashRepository";
 import { IVersionRepository } from "../../domain/file/interfaces/IVersionRepository";
 import { HashRepository } from "../../infrastructure/repository/HashRepository";

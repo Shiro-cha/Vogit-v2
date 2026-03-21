@@ -1,4 +1,4 @@
-class Hash {
+export class Hash {
     readonly hashValue: string;
     readonly text: string;
 

@@ -1,4 +1,4 @@
-import { Hash } from "../../domain/file/Hash";
+import { Hash } from "../../domain/file/entities/Hash";
 import { IHashRepository } from "../../domain/file/interfaces/IHashRepository";
 
 export class HashRepository implements IHashRepository {
