@@ -3,6 +3,7 @@ import { VersionLine } from "../../domain/file/entities/VersionLine";
 import { Hash } from "../../domain/file/Hash";
 import { IHashRepository } from "../../domain/file/interfaces/IHashRepository";
 import { IVersionRepository } from "../../domain/file/interfaces/IVersionRepository";
+import { computeHash } from "../../infrastructure/utils/hashManager";
 
 export class VersionBuilder {
     constructor(
