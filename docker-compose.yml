@@ -1,5 +1,3 @@
-version: "1.0"
-
 services:
   app:
     container_name: vogit
@@ -7,21 +5,23 @@ services:
     volumes:
       - .:/app
     environment:
-      - DB_URI=postgresql://vogit_user:vogit_password@db:5432/vogit_db
+      DB_URI: postgresql://vogit_user:vogit_password@db:5432/vogit_db
     command: bun run start
     depends_on:
       - db
     restart: always
+
   db:
-    image: postgres:latest
+    image: postgres:15
     container_name: vogit-db
     environment:
-      POSTGRES_USER: portgres
-      POSTGRES_PASSWORD: portgres
+      POSTGRES_USER: vogit_user
+      POSTGRES_PASSWORD: vogit_password
       POSTGRES_DB: vogit_db
     ports:
       - "5432:5432"
     volumes:
-      - vogit_db_data:/var/lib/postgresql/
+      - vogit_db_data:/var/lib/postgresql/data
+
 volumes:
   vogit_db_data:
