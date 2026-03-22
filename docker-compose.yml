@@ -21,7 +21,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - vogit_db_data:/var/lib/postgresql/data
+      - vogit_db_data:/var/lib/postgresql
 
 volumes:
   vogit_db_data:
