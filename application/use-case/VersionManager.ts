@@ -1,12 +1,12 @@
 import { Version } from "../../domain/file/entities/Version";
 import { VersionLine } from "../../domain/file/entities/VersionLine";
 import { Hash } from "../../domain/file/entities/Hash";
-import { IHashRepository } from "../../domain/file/interfaces/IHashRepository";
-import { IVersionRepository } from "../../domain/file/interfaces/IVersionRepository";
+import { IHashRepository } from "../../domain/file/interfaces/read/IHashRepository";
+import { IVersionRepository } from "../../domain/file/interfaces/read/IVersionRepository";
 import { HashRepository } from "../../infrastructure/repository/in-memory/HashRepository";
 import { VersionRepository } from "../../infrastructure/repository/in-memory/VersionRepository";
 import { VersionBuilder } from "./VersionBuilder";
-import { IVersionLineRepository } from "../../domain/file/interfaces/IVersionLineRepository";
+import { IVersionLineRepository } from "../../domain/file/interfaces/read/IVersionLineRepository";
 import { VersionLineRepository } from "../../infrastructure/repository/in-memory/VersionLineRepository";
 
 export class VersionManager {

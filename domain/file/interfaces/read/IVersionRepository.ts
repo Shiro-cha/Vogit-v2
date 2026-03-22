@@ -1,4 +1,4 @@
-import { Version } from "../entities/Version";
+import { Version } from "../../entities/Version";
 
 export interface IVersionRepository {
     add(version: Version): void;

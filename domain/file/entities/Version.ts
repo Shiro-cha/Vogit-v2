@@ -1,4 +1,6 @@
-export class Version {
+import { IEntity } from "../interfaces/IEntity";
+
+export class Version implements IEntity {
     readonly versionNumber: number;
     readonly createdAt: Date;
     readonly updatedAt?: Date;
@@ -9,5 +11,8 @@ export class Version {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.lines = lines;
+    }
+    getTableName(): string {
+        return "versions";
     }
 }

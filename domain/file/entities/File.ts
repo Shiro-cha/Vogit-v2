@@ -1,4 +1,6 @@
-export class File {
+import { IEntity } from "../interfaces/IEntity";
+
+export class File implements IEntity {
     id: number;
     name: string;
     size: number;
@@ -15,6 +17,9 @@ export class File {
         this.updatedAt = updatedAt;
     }
 
+    getTableName(): string {
+        return "files";
+    }
     
 
 }

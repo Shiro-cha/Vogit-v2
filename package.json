@@ -1,5 +1,5 @@
 {
-  "name": "Vogit-v2",
+  "name": "vogit-v2",
   "version": "1.0.0",
   "description": "Hello, this is Vogit v2",
   "main": "main.ts",
@@ -8,5 +8,10 @@
   },
   "author": "Shiro",
   "license": "MIT",
-  "dependencies": {}
+  "dependencies": {
+    "postgres": "^8.0.0",
+    "sqlite3": "^5.0.0",
+    "typeorm": "^0.3.0"
+
+  }
 }

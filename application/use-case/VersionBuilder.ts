@@ -1,10 +1,10 @@
 import { Version } from "../../domain/file/entities/Version";
 import { Hash } from "../../domain/file/entities/Hash";
 import { VersionLine } from "../../domain/file/entities/VersionLine";
-import { IHashRepository } from "../../domain/file/interfaces/IHashRepository";
-import { IVersionRepository } from "../../domain/file/interfaces/IVersionRepository";
+import { IHashRepository } from "../../domain/file/interfaces/read/IHashRepository";
+import { IVersionRepository } from "../../domain/file/interfaces/read/IVersionRepository";
 import { computeHash } from "../../infrastructure/utils/hashManager";
-import { IVersionLineRepository } from "../../domain/file/interfaces/IVersionLineRepository";
+import { IVersionLineRepository } from "../../domain/file/interfaces/read/IVersionLineRepository";
 
 export class VersionBuilder {
     constructor(
@@ -13,10 +13,6 @@ export class VersionBuilder {
         private readonly versionLineRepo: IVersionLineRepository
     ) {}
 
-    /**
-     * Builds a new Version and its VersionLines from the given lines.
-     * The version number is automatically determined (last version + 1, or 1 if none).
-     */
     buildFromLines(lines: string[]): Version {
         const lastVersion = this.versionRepo.getLast();
         const newVersionNumber = lastVersion ? lastVersion.versionNumber + 1 : 1;

@@ -1,4 +1,5 @@
-import { Hash } from "../Hash";
+import { Hash } from "../../entities/Hash";
+
 
 export interface IHashRepository {
     findByValue(hash: string): Hash | undefined;

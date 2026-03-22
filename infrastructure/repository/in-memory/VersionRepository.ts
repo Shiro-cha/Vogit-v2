@@ -1,5 +1,5 @@
 import { Version } from "../../../domain/file/entities/Version";
-import { IVersionRepository } from "../../../domain/file/interfaces/IVersionRepository";
+import { IVersionRepository } from "../../../domain/file/interfaces/read/IVersionRepository";
 
 export class VersionRepository implements IVersionRepository {
     private readonly versions: Version[] = [];

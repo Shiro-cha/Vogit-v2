@@ -1,6 +1,7 @@
+import { IEntity } from "../interfaces/IEntity";
 import { Version } from "./Version";
 
-export class VersionLine {
+export class VersionLine implements IEntity {
     readonly version: Version;
     readonly lineNumber: number;
     readonly hash: string;
@@ -9,5 +10,8 @@ export class VersionLine {
         this.version = version;
         this.lineNumber = lineNumber;
         this.hash = hash;
+    }
+    getTableName(): string {
+        return "version_lines";
     }
 }
