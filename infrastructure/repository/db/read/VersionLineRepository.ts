@@ -1,5 +1,5 @@
-import { VersionLine } from "../../../domain/file/entities/VersionLine";
-import { IVersionLineRepository } from "../../../domain/file/interfaces/IVersionLineRepository";
+import { VersionLine } from "../../../../domain/file/entities/VersionLine";
+import { IVersionLineRepository } from "../../../../domain/file/interfaces/read/IVersionLineRepository";
 
 export class VersionLineRepository implements IVersionLineRepository {
     private readonly versionLines: VersionLine[] = [];
