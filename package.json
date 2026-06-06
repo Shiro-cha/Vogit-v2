@@ -9,7 +9,7 @@
   "author": "Shiro",
   "license": "MIT",
   "dependencies": {
-    "postgres": "^8.0.0",
+    "postgres": "^3.4.9",
     "sqlite3": "^5.0.0",
     "typeorm": "^0.3.0"
 
