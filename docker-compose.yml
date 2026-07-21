@@ -5,7 +5,7 @@ services:
     volumes:
       - .:/app
     environment:
-      DB_URI: postgresql://vogit_user:vogit_password@db:5432/vogit_db
+      DATABASE_URL: postgresql://vogit_user:vogit_password@db:5432/vogit_db
     command: bun run start
     depends_on:
       - db

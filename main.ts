@@ -1,5 +1,6 @@
 
 import { VersionManager } from "./application/use-case/VersionManager";
+import { PostgresDatabase } from "./infrastructure/database/sql/PostgresDatabase";
 
 const content1 = `B
 A
@@ -20,3 +21,9 @@ console.log(
     "\n\n\n",
     manager.getAllHashes()
 );
+
+
+const database = new PostgresDatabase();
+database.query("SELECT table_name FROM information_schema.tables").then((result) => {
+    console.log("Database query result:", result);
+});
