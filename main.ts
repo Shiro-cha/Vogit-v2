@@ -24,6 +24,6 @@ console.log(
 
 
 const database = new PostgresDatabase();
-database.query("SELECT table_name FROM information_schema.tables").then((result) => {
+database.query("SELECT * FROM information_schema.tables").then((result) => {
     console.log("Database query result:", result);
 });
