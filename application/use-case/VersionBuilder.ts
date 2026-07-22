@@ -21,6 +21,7 @@ export class VersionBuilder {
             newVersionNumber,
             new Date(),
             [], 
+            lines.length,
             undefined
         );
 
@@ -38,7 +39,7 @@ export class VersionBuilder {
             }
 
             if (lastVersion) {
-                const previousLine = this.versionLineRepo.findByVersionAndLine(lastVersion.versionNumber, lineNumber);
+                const previousLine = this.getLineLatestVersion(lineNumber, newVersion.versionNumber);
                 if (previousLine && previousLine.hash === hashValue) {
                     continue;
                 }
@@ -53,11 +54,22 @@ export class VersionBuilder {
             newVersion.versionNumber,
             newVersion.createdAt,
             lineNumbersPresent,
+            newVersion.totalLines,
             newVersion.updatedAt
         );
 
         this.versionRepo.add(finalVersion);
 
         return finalVersion;
+    }
+
+    private getLineLatestVersion(lineNumber: number, currentVersionNumber: number): VersionLine | undefined {
+        for (let versionNum = currentVersionNumber - 1; versionNum >= 1; versionNum--) {
+            const versionLine = this.versionLineRepo.findByVersionAndLine(versionNum, lineNumber);
+            if (versionLine) {
+                return versionLine;
+            }
+        }
+        return undefined;
     }
 }
