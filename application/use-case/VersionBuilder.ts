@@ -32,21 +32,21 @@ export class VersionBuilder {
             const lineContent = lines[i];
             const hashValue = computeHash(lineContent);
 
-            let hash = this.hashRepo.findByValue(hashValue);
+            let hash = await this.hashRepo.findByValue(hashValue);
             if (!hash) {
                 hash = new Hash(hashValue, lineContent);
-                this.hashRepo.add(hash);
+                await this.hashRepo.add(hash);
             }
 
             if (lastVersion) {
-                const previousLine = this.getLineLatestVersion(lineNumber, newVersion.versionNumber);
+                const previousLine = await this.getLineLatestVersion(lineNumber, newVersion.versionNumber);
                 if (previousLine && previousLine.hash === hashValue) {
                     continue;
                 }
             }
             newVersion.lines.push(lineNumber);
             const versionLine = new VersionLine(newVersion, lineNumber, hashValue);
-            this.versionLineRepo.add(versionLine);
+            await this.versionLineRepo.add(versionLine);
             lineNumbersPresent.push(lineNumber);
         }
         if (lineNumbersPresent.length === 0) {
@@ -66,9 +66,9 @@ export class VersionBuilder {
         return finalVersion;
     }
 
-    private getLineLatestVersion(lineNumber: number, currentVersionNumber: number): VersionLine | undefined {
+    private async getLineLatestVersion(lineNumber: number, currentVersionNumber: number): Promise<VersionLine | undefined> {
         for (let versionNum = currentVersionNumber - 1; versionNum >= 1; versionNum--) {
-            const versionLine = this.versionLineRepo.findByVersionAndLine(versionNum, lineNumber);
+            const versionLine = await this.versionLineRepo.findByVersionAndLine(versionNum, lineNumber);
             if (versionLine) {
                 return versionLine;
             }

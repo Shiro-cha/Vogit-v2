@@ -3,31 +3,42 @@ import { VersionLine } from "../../domain/file/entities/VersionLine";
 import { Hash } from "../../domain/file/entities/Hash";
 import { IHashRepository } from "../../domain/file/interfaces/read/IHashRepository";
 import { IVersionRepository } from "../../domain/file/interfaces/read/IVersionRepository";
-import { HashRepository } from "../../infrastructure/repository/in-memory/HashRepository";
-import { VersionRepository } from "../../infrastructure/repository/in-memory/VersionRepository";
+import { HashRepository } from "../../infrastructure/repository/db/read/HashRepository";
+import { VersionRepository } from "../../infrastructure/repository/db/read/VersionRepository";
 import { VersionBuilder } from "./VersionBuilder";
 import { IVersionLineRepository } from "../../domain/file/interfaces/read/IVersionLineRepository";
-import { VersionLineRepository } from "../../infrastructure/repository/in-memory/VersionLineRepository";
+import { VersionLineRepository } from "../../infrastructure/repository/db/read/VersionLineRepository";
 
 export class VersionManager {
-    private readonly hashRepo: IHashRepository = new HashRepository();
-    private readonly versionRepo: IVersionRepository = new VersionRepository();
-    private readonly versionLineRepo: IVersionLineRepository = new VersionLineRepository();
-    private readonly builder: VersionBuilder;
+    private  hashRepo: IHashRepository | undefined;
+    private  versionRepo: IVersionRepository | undefined;
+    private  versionLineRepo: IVersionLineRepository | undefined;
+    private  builder: VersionBuilder | undefined;
 
-    constructor() {
-        this.builder = new VersionBuilder(this.hashRepo, this.versionRepo, this.versionLineRepo);
+    private constructor() {
+        
     }
 
+    static async createInstance(): Promise<VersionManager> {
+        const instance = new VersionManager();
+        instance.versionRepo = await VersionRepository.initialize();
+        instance.versionLineRepo = await VersionLineRepository.initialize();
+        instance.hashRepo = await HashRepository.initialize();
+        instance.builder = new VersionBuilder(instance.hashRepo, instance.versionRepo, instance.versionLineRepo);
+        return instance;
+    }
     async createVersion(content: string): Promise<Version | undefined> {
             const lines = content.split('\n');
-            return this.builder.buildFromLines(lines);
+            return this.builder?.buildFromLines(lines);
        
         
     }
 
     async getVersionContent(versionNumber: number): Promise<string | undefined>  {
         const contentLines: string[] = [];
+        if (!this.versionRepo || !this.versionLineRepo || !this.hashRepo) {
+            throw new Error("Repositories are not initialized.");
+        }
         const data = await this.versionRepo.getAll()
         const version= data.find(v => v.versionNumber === versionNumber);
         if (!version) {
@@ -37,9 +48,9 @@ export class VersionManager {
            if (!version.lines.includes(i)) {
                 const previousVersion = await this.getLineLatestVersion(i, versionNumber);
                 if (previousVersion) {
-                    const previousLine = this.versionLineRepo.findByVersionAndLine(previousVersion.versionNumber, i);
+                    const previousLine = await this.versionLineRepo.findByVersionAndLine(previousVersion.versionNumber, i);
                     if (previousLine) {
-                        const hash = this.hashRepo.findByValue(previousLine.hash);
+                        const hash = await this.hashRepo.findByValue(previousLine.hash);
                         if (hash) {
                             contentLines.push(hash.text);
                             continue;
@@ -47,12 +58,12 @@ export class VersionManager {
                     }
                 }
             }
-            const versionLine = this.versionLineRepo.findByVersionAndLine(versionNumber, i);
+            const versionLine = await this.versionLineRepo.findByVersionAndLine(versionNumber, i);
             if (!versionLine) {
                 contentLines.push(""); 
                 continue;
             }
-            const hash = this.hashRepo.findByValue(versionLine.hash);
+            const hash = await this.hashRepo.findByValue(versionLine.hash);
             if (hash) {
                 contentLines.push(hash.text);
             }
@@ -60,9 +71,12 @@ export class VersionManager {
         return contentLines.join('\n');
     }  
 
-    private getLineLatestVersion(lineNumber: number, currentVersionNumber: number): Version | undefined {
+    private async getLineLatestVersion(lineNumber: number, currentVersionNumber: number): Promise<Version | undefined> {
+        if (!this.versionLineRepo || !this.versionRepo) {
+            throw new Error("Repositories are not initialized.");
+        }
         for (let versionNum = currentVersionNumber - 1; versionNum >= 1; versionNum--) {
-            const versionLine = this.versionLineRepo.findByVersionAndLine(versionNum, lineNumber);
+            const versionLine = await this.versionLineRepo.findByVersionAndLine(versionNum, lineNumber);
             if (versionLine) {
                 return versionLine.version;
             }
@@ -70,15 +84,21 @@ export class VersionManager {
         return undefined;
     }
 
-    getAllHashes(): Hash[] {
-        return this.hashRepo.getAll();
+    async getAllHashes(): Promise<Hash[]> {
+        return await this.hashRepo.getAll();
     }
 
     async getAllVersions(): Promise<Version[]> {
+        if (!this.versionRepo) {
+            throw new Error("Version repository is not initialized.");
+        }
         return await this.versionRepo.getAll();
     }
 
     async getAllVersionLines(): Promise<VersionLine[]> {
+        if (!this.versionLineRepo) {
+            throw new Error("Version line repository is not initialized.");
+        }
         return await this.versionLineRepo.getAll();
     }
 }

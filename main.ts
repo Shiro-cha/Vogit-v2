@@ -18,7 +18,8 @@ A
 A
 D`;
 
-const manager = new VersionManager();
+
+const manager = await VersionManager.createInstance();
 
 const version1 = await manager.createVersion(content1);
 const version2 = await manager.createVersion(content2);

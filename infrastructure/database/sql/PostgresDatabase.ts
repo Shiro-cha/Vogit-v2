@@ -4,6 +4,7 @@ import process from "process";
 
 export class PostgresDatabase implements IDatabase {
   private pool: Pool;
+  databasename: string ="vogit_db";
 
   constructor() {
     this.pool = new Pool({
@@ -22,4 +23,5 @@ export class PostgresDatabase implements IDatabase {
     const query = `CREATE TABLE IF NOT EXISTS ${tableName} (${columns})`;
     await this.pool.query(query);
   }
+  
 }

@@ -12,6 +12,10 @@ export class VersionRepository implements IVersionRepository {
         return this.versions.length > 0 ? this.versions[this.versions.length - 1] : undefined;
     }
 
+    async getByVersionNumber(versionNumber: number): Promise<Version | undefined> {
+        return this.versions.find(v => v.versionNumber === versionNumber);
+    }
+
     async getAll(): Promise<Version[]> {
         return this.versions;
     }
