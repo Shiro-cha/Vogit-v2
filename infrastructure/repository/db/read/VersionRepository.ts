@@ -1,18 +1,33 @@
 import { Version } from "../../../../domain/file/entities/Version";
 import { IVersionRepository } from "../../../../domain/file/interfaces/read/IVersionRepository";
+import { PostgresDatabase } from "../../../database/sql/PostgresDatabase";
 
 export class VersionRepository implements IVersionRepository {
-    private readonly versions: Version[] = [];
+    private readonly database = new PostgresDatabase();
 
-    add(version: Version): void {
-        this.versions.push(version);
+    async add(version: Version): Promise<void> {
+        const tableName = Version.getTableName();
+        const columns = "version_number INT PRIMARY KEY, created_at TIMESTAMP, updated_at TIMESTAMP, lines INT[], total_lines INT";
+        await this.database.createTableIfNotExists(tableName, columns);
+        const sql = `(version_number, created_at, updated_at, lines, total_lines) VALUES ($1, $2, $3, $4, $5)`;
+        const params = [version.versionNumber, version.createdAt, version.updatedAt || null, version.lines, version.totalLines];
+        await this.database.insert(tableName, sql, params);
     }
 
-    getLast(): Version | undefined {
-        return this.versions.length > 0 ? this.versions[this.versions.length - 1] : undefined;
+     async getLast(): Promise<Version | undefined> {
+        const tableName = Version.getTableName();
+        const sql = `* FROM ${tableName} ORDER BY version_number DESC LIMIT 1`;
+        const result = await this.database.select<any[]>(sql);
+        if (result.length === 0) {
+            return undefined;
+        }
+        return new Version(result[0].version_number, result[0].created_at, result[0].lines, result[0].total_lines, result[0].updated_at);
     }
 
-    getAll(): Version[] {
-        return this.versions;
+    async getAll(): Promise<Version[]> {
+        const tableName = Version.getTableName();
+        const sql = `* FROM ${tableName} ORDER BY version_number ASC`;
+        const result = await this.database.select<any[]>(sql);
+        return result.map((row) => new Version(row.version_number, row.created_at, row.lines, row.total_lines, row.updated_at));
     }
 }

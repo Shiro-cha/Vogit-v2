@@ -4,15 +4,15 @@ import { IVersionRepository } from "../../../domain/file/interfaces/read/IVersio
 export class VersionRepository implements IVersionRepository {
     private readonly versions: Version[] = [];
 
-    add(version: Version): void {
+    async add(version: Version): Promise<void> {
         this.versions.push(version);
     }
 
-    getLast(): Version | undefined {
+    async getLast(): Promise<Version | undefined> {
         return this.versions.length > 0 ? this.versions[this.versions.length - 1] : undefined;
     }
 
-    getAll(): Version[] {
+    async getAll(): Promise<Version[]> {
         return this.versions;
     }
 }

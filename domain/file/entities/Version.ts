@@ -14,7 +14,7 @@ export class Version implements IEntity {
         this.lines = lines;
         this.totalLines = totalLines;
     }
-    getTableName(): string {
+    static getTableName(): string {
         return "versions";
     }
 }

@@ -17,7 +17,7 @@ export class File implements IEntity {
         this.updatedAt = updatedAt;
     }
 
-    getTableName(): string {
+    static getTableName(): string {
         return "files";
     }
     

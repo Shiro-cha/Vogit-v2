@@ -11,8 +11,15 @@ export class PostgresDatabase implements IDatabase {
     });
   }
 
-  async query<T>(sql: string, params?: any[]): Promise<T> {
-    const result = await this.pool.query(sql, params);
+  async select<T>(sql: string, params?: any[]): Promise<T> {
+    const result = await this.pool.query(`SELECT ${sql}`, params);
     return result.rows;
+  }
+  async insert(table: string, sql: string, params?: any[]): Promise<void> {
+    await this.pool.query(`INSERT INTO ${table} ${sql}`, params);
+  }
+  async createTableIfNotExists(tableName: string, columns: string): Promise<void> {
+    const query = `CREATE TABLE IF NOT EXISTS ${tableName} (${columns})`;
+    await this.pool.query(query);
   }
 }

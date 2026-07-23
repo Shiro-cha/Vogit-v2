@@ -1,7 +1,7 @@
 import { VersionLine } from "../../entities/VersionLine";
 
 export interface IVersionLineRepository {
-    findByVersionAndLine(versionNumber: number, lineNumber: number): VersionLine | undefined;
-    add(versionLine: VersionLine): void;
-    getAll(): VersionLine[];
+    findByVersionAndLine(versionNumber: number, lineNumber: number): Promise<VersionLine | undefined>;
+    add(versionLine: VersionLine): Promise<void>;
+    getAll(): Promise<VersionLine[]>;
 }

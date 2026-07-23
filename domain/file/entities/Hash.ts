@@ -9,7 +9,7 @@ export class Hash implements IEntity {
         this.text = text;
     }
 
-    getTableName(): string {
+    static getTableName(): string {
         return "hashes";
     }
 }

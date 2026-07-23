@@ -1,3 +1,4 @@
 export interface IDatabase {
-        query<T>(sql: string, params?: any[]): Promise<T[]>;
+        select<T>(sql: string, params?: any[]): Promise<T[]>;
+        
 }

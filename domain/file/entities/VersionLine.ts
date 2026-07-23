@@ -11,7 +11,7 @@ export class VersionLine implements IEntity {
         this.lineNumber = lineNumber;
         this.hash = hash;
     }
-    getTableName(): string {
+    static getTableName(): string {
         return "version_lines";
     }
-}
+} 

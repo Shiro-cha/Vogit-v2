@@ -13,8 +13,8 @@ export class VersionBuilder {
         private readonly versionLineRepo: IVersionLineRepository
     ) {}
 
-    buildFromLines(lines: string[]): Version {
-        const lastVersion = this.versionRepo.getLast();
+    async buildFromLines(lines: string[]): Promise<Version | undefined> {
+        const lastVersion = await this.versionRepo.getLast();
         const newVersionNumber = lastVersion ? lastVersion.versionNumber + 1 : 1;
 
         const newVersion = new Version(
@@ -48,6 +48,9 @@ export class VersionBuilder {
             const versionLine = new VersionLine(newVersion, lineNumber, hashValue);
             this.versionLineRepo.add(versionLine);
             lineNumbersPresent.push(lineNumber);
+        }
+        if (lineNumbersPresent.length === 0) {
+        return undefined;
         }
 
         const finalVersion = new Version(

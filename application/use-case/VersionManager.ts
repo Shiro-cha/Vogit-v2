@@ -19,20 +19,23 @@ export class VersionManager {
         this.builder = new VersionBuilder(this.hashRepo, this.versionRepo, this.versionLineRepo);
     }
 
-    createVersion(content: string): Version {
-        const lines = content.split('\n');
-        return this.builder.buildFromLines(lines);
+    async createVersion(content: string): Promise<Version | undefined> {
+            const lines = content.split('\n');
+            return this.builder.buildFromLines(lines);
+       
+        
     }
 
-    getVersionContent(versionNumber: number): string | undefined {
+    async getVersionContent(versionNumber: number): Promise<string | undefined>  {
         const contentLines: string[] = [];
-        const version = this.versionRepo.getAll().find(v => v.versionNumber === versionNumber);
+        const data = await this.versionRepo.getAll()
+        const version= data.find(v => v.versionNumber === versionNumber);
         if (!version) {
             return undefined;
         }
         for (let i = 1; i <= version.totalLines; i++) {
            if (!version.lines.includes(i)) {
-                const previousVersion = this.getLineLatestVersion(i, versionNumber);
+                const previousVersion = await this.getLineLatestVersion(i, versionNumber);
                 if (previousVersion) {
                     const previousLine = this.versionLineRepo.findByVersionAndLine(previousVersion.versionNumber, i);
                     if (previousLine) {
@@ -71,11 +74,11 @@ export class VersionManager {
         return this.hashRepo.getAll();
     }
 
-    getAllVersions(): Version[] {
-        return this.versionRepo.getAll();
+    async getAllVersions(): Promise<Version[]> {
+        return await this.versionRepo.getAll();
     }
 
-    getAllVersionLines(): VersionLine[] {
-        return this.versionLineRepo.getAll();
+    async getAllVersionLines(): Promise<VersionLine[]> {
+        return await this.versionLineRepo.getAll();
     }
 }
