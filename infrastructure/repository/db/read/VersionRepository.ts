@@ -9,7 +9,7 @@ export class VersionRepository implements IVersionRepository {
     static async initialize() {
         const instance = new VersionRepository();
         const tableName = Version.getTableName();
-        const columns = "version_number INT PRIMARY KEY, created_at TIMESTAMP, updated_at TIMESTAMP, lines INT[], total_lines INT";
+        const columns = "id SERIAL PRIMARY KEY, version_number INT, created_at TIMESTAMP, updated_at TIMESTAMP, lines INT[], total_lines INT";
         await instance.database.createTableIfNotExists(tableName, columns);
         return instance;
     }

@@ -85,6 +85,9 @@ export class VersionManager {
     }
 
     async getAllHashes(): Promise<Hash[]> {
+        if (!this.hashRepo) {
+            throw new Error("Hash repository is not initialized.");
+        }
         return await this.hashRepo.getAll();
     }
 
