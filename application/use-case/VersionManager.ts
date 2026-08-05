@@ -1,13 +1,14 @@
 import { Version } from "../../domain/file/entities/Version";
+import { File } from "../../domain/file/entities/File";
 import { VersionLine } from "../../domain/file/entities/VersionLine";
 import { Hash } from "../../domain/file/entities/Hash";
 import { IHashRepository } from "../../domain/file/interfaces/read/IHashRepository";
 import { IVersionRepository } from "../../domain/file/interfaces/read/IVersionRepository";
-import { HashRepository } from "../../infrastructure/repository/db/read/HashRepository";
-import { VersionRepository } from "../../infrastructure/repository/db/read/VersionRepository";
+import { HashRepository } from "../../infrastructure/repository/in-memory/HashRepository";
+import { VersionRepository } from "../../infrastructure/repository/in-memory/VersionRepository";
 import { VersionBuilder } from "./VersionBuilder";
 import { IVersionLineRepository } from "../../domain/file/interfaces/read/IVersionLineRepository";
-import { VersionLineRepository } from "../../infrastructure/repository/db/read/VersionLineRepository";
+import { VersionLineRepository } from "../../infrastructure/repository/in-memory/VersionLineRepository";
 
 export class VersionManager {
     private  hashRepo: IHashRepository | undefined;
@@ -27,9 +28,9 @@ export class VersionManager {
         instance.builder = new VersionBuilder(instance.hashRepo, instance.versionRepo, instance.versionLineRepo);
         return instance;
     }
-    async createVersion(content: string): Promise<Version | undefined> {
+    async createVersion(file: File, content: string): Promise<Version | undefined> {
             const lines = content.split('\n');
-            return this.builder?.buildFromLines(lines);
+            return this.builder?.buildFromLines(file,lines);
        
         
     }

@@ -1,6 +1,8 @@
 
 import { VersionManager } from "./application/use-case/VersionManager";
 import { PostgresDatabase } from "./infrastructure/database/sql/PostgresDatabase";
+import { LocalManager } from "./infrastructure/filesystem/LocalManager";
+import { File } from "./domain/file/entities/File";
 try {
 
 const content1 = `
@@ -16,14 +18,22 @@ const content3 = `
 B
 A
 A
-D`;
+Y`;
+const filemanager = new LocalManager();
+const file1 = await filemanager.createFile("test1.txt", content1);
+const file2 = await filemanager.createFile("test2.txt", content2);
+const file3 = await filemanager.createFile("test3.txt", content3);
 
+
+const file1Entity= new File(await filemanager.getFileName(file1), await filemanager.getFilePath(file1), await filemanager.getFileSize(file1), await filemanager.getFileExtension(file1), await filemanager.getFileCreationTime(file1), await filemanager.getFileLastModifiedTime(file1));
+const file2Entity= new File(await filemanager.getFileName(file2), await filemanager.getFilePath(file2), await filemanager.getFileSize(file2), await filemanager.getFileExtension(file2), await filemanager.getFileCreationTime(file2), await filemanager.getFileLastModifiedTime(file2));
+const file3Entity= new File(await filemanager.getFileName(file3), await filemanager.getFilePath(file3), await filemanager.getFileSize(file3), await filemanager.getFileExtension(file3), await filemanager.getFileCreationTime(file3), await filemanager.getFileLastModifiedTime(file3));
 
 const manager = await VersionManager.createInstance();
 
-const version1 = await manager.createVersion(content1);
-const version2 = await manager.createVersion(content2);
-const version3 = await manager.createVersion(content3);
+const version1 = await manager.createVersion(file1Entity, await filemanager.readFile(file1));
+const version2 = await manager.createVersion(file2Entity, await filemanager.readFile(file2));
+const version3 = await manager.createVersion(file3Entity, await filemanager.readFile(file3));
 
 console.log(
     "\n\n\n",
@@ -47,6 +57,16 @@ console.log(
     "\nVersion 3 Content",
     "\n\n\n",
 );
+
+console.log(
+    "\n\n\n====\n",
+    file1Entity,
+    "\nentity\n\n\n====\n",
+    file2Entity,
+    "\nentity\n\n\n====\n",
+    file3Entity,
+    "\nentity\n\n\n",
+)
 
 // const database = new PostgresDatabase();
 // database.query("SELECT * FROM information_schema.tables").then((result) => {

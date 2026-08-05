@@ -4,15 +4,21 @@ import { IHashRepository } from "../../../domain/file/interfaces/read/IHashRepos
 export class HashRepository implements IHashRepository {
     private readonly hashes: Hash[] = [];
 
-    findByValue(hash: string): Hash | undefined {
+    private constructor() {}
+
+    static async initialize(): Promise<HashRepository> {
+        const instance = new HashRepository();
+        return instance;
+    }
+    async findByValue(hash: string): Promise<Hash | undefined>   {
         return this.hashes.find(h => h.hashValue === hash);
     }
 
-    add(hash: Hash): void {
+    async add(hash: Hash): Promise<void> {
         this.hashes.push(hash);
     }
 
-    getAll(): Hash[] {
+    async getAll(): Promise<Hash[]> {
         return this.hashes;
     }
 }

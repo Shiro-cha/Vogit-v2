@@ -4,6 +4,12 @@ import { IVersionRepository } from "../../../domain/file/interfaces/read/IVersio
 export class VersionRepository implements IVersionRepository {
     private readonly versions: Version[] = [];
 
+    private constructor() {}
+
+    static async initialize(): Promise<VersionRepository> {
+        const instance = new VersionRepository();
+        return instance;
+    }
     async add(version: Version): Promise<void> {
         this.versions.push(version);
     }

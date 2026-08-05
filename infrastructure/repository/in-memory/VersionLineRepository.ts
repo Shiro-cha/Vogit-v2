@@ -4,16 +4,22 @@ import { IVersionLineRepository } from "../../../domain/file/interfaces/read/IVe
 export class VersionLineRepository implements IVersionLineRepository {
     private readonly versionLines: VersionLine[] = [];
 
-    findByVersionAndLine(versionNumber: number, lineNumber: number): VersionLine | undefined {
+    private constructor() {}
+
+    static async initialize(): Promise<VersionLineRepository> {
+        const instance = new VersionLineRepository();
+        return instance;
+    }
+    async findByVersionAndLine(versionNumber: number, lineNumber: number): Promise<VersionLine | undefined> {
         return this.versionLines.find(vl => vl.version.versionNumber === versionNumber && vl.lineNumber === lineNumber);
     }
 
-    add(versionLine: VersionLine): void {
+    async add(versionLine: VersionLine): Promise<void> {
          this.versionLines.push(versionLine);
 
     }
 
-    getAll(): VersionLine[] {
+    async getAll(): Promise<VersionLine[]> {
         return this.versionLines;
     }
 }

@@ -1,16 +1,17 @@
 import { IEntity } from "../interfaces/IEntity";
 
 export class File implements IEntity {
-    id: number;
-    name: string;
-    size: number;
-    type: string
-    createdAt: Date;
-    updatedAt?: Date;
+    readonly id: number | undefined;
+    readonly absolutePath: string | undefined;
+    readonly name: string;
+    readonly size: number;
+    readonly type: string;
+    readonly createdAt: Date;
+    readonly updatedAt?: Date;
 
-    constructor(id: number, name: string, size: number, type: string, createdAt: Date, updatedAt?: Date) {
-        this.id = id;
+    constructor( name: string, absolutePath: string | undefined, size: number, type: string, createdAt: Date, updatedAt?: Date) {
         this.name = name;
+        this.absolutePath = absolutePath;
         this.size = size;
         this.type = type;
         this.createdAt = createdAt;
