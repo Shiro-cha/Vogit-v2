@@ -17,6 +17,12 @@ export class HashRepository implements IHashRepository {
     async add(hash: Hash): Promise<void> {
         this.hashes.push(hash);
     }
+    async addIfNotExists(hash: Hash): Promise<void> {
+        const existingHash = await this.findByValue(hash.hashValue);
+        if (!existingHash) {
+            this.hashes.push(hash);
+        }
+    }
 
     async getAll(): Promise<Hash[]> {
         return this.hashes;

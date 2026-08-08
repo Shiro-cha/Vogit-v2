@@ -24,6 +24,12 @@ export class HashRepository implements IHashRepository {
         await this.db.createTableIfNotExists(tableName, "hashValue VARCHAR(255) PRIMARY KEY, text TEXT");
         await this.db.insert(tableName, query, [hash.hashValue, hash.text]);
     }
+    async addIfNotExists(hash: Hash): Promise<void> {
+        const existingHash = await this.findByValue(hash.hashValue);
+        if (!existingHash) {
+            await this.add(hash);
+        }
+    }
 
     async findByValue(hash: string): Promise<Hash | undefined> {
         const tableName = Hash.getTableName();

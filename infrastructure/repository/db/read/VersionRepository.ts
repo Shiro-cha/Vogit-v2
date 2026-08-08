@@ -22,6 +22,12 @@ export class VersionRepository implements IVersionRepository {
         const params = [version.versionNumber, version.createdAt, version.updatedAt || null, version.lines, version.totalLines];
         await this.database.insert(tableName, sql, params);
     }
+    async addIfNotExists(version: Version): Promise<void> {
+        const existingVersion = await this.getByVersionNumber(version.versionNumber);
+        if (!existingVersion) {
+            await this.add(version);
+        }
+    }
 
      async getLast(): Promise<Version | undefined> {
         const tableName = Version.getTableName();

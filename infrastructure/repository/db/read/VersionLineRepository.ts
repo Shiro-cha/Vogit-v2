@@ -44,6 +44,12 @@ export class VersionLineRepository implements IVersionLineRepository {
         await this.database.insert(tableName, insertQuery, values);
 
     }
+    async addIfNotExists(versionLine: VersionLine): Promise<void> {
+        const existingVersionLine = await this.findByVersionAndLine(versionLine.version.versionNumber, versionLine.lineNumber);
+        if (!existingVersionLine) {
+            await this.add(versionLine);
+        }
+    }
 
     async getAll(): Promise<VersionLine[]> {
         if (!this.versionRepository) {

@@ -1,26 +1,67 @@
 import { File } from "../../../../domain/file/entities/File";
 import { IFileRepository } from "../../../../domain/file/interfaces/read/IFileRepository";
+import { IDatabase } from "../../../database/IDatabase";
+import { PostgresDatabase } from "../../../database/sql/PostgresDatabase";
 
 export class FileRepository implements IFileRepository {
-    private files: File[] = [];
+    private db: IDatabase;
+
+    private constructor() {
+        this.db = new PostgresDatabase();
+    }   
+
+    static async initialize(): Promise<FileRepository> {
+        const instance = new FileRepository();
+        await instance.db.createTableIfNotExists(File.getTableName(), "id SERIAL PRIMARY KEY, absolutePath TEXT, name TEXT, size BIGINT, type TEXT, createdAt TIMESTAMP, updatedAt TIMESTAMP");
+        return instance;
+    }
 
     async findByPath(path: string): Promise<File | undefined> {
-        return this.files.find((file) => file.path === path);
+        const tableName = File.getTableName();
+        const query = `* FROM ${tableName} WHERE absolutePath = $1`;
+        const result = await this.db.select<any>(query, [path]);
+        if (result.length === 0) {
+            return undefined;
+        }
+        const file = new File(
+            result[0].name,
+            result[0].absolutePath,
+            result[0].size,
+            result[0].type,
+            new Date(result[0].createdAt),
+            new Date(result[0].updatedAt)
+        );
+        return file;
     }
 
     async add(file: File): Promise<void> {
-        const existingIndex = this.files.findIndex((existing) => existing.path === file.path);
+        const tableName = File.getTableName();
+        const query = `(absolutePath, name, size, type, createdAt, updatedAt) VALUES ($1, $2, $3, $4, $5, $6)`;
+        await this.db.createTableIfNotExists(tableName, "id SERIAL PRIMARY KEY, absolutePath TEXT, name TEXT, size BIGINT, type TEXT, createdAt TIMESTAMP, updatedAt TIMESTAMP");
+        await this.db.insert(tableName, query, [file.absolutePath, file.name, file.size, file.type, file.createdAt.toISOString(), file.updatedAt?.toISOString()]);
+    }
 
-        if (existingIndex >= 0) {
-            this.files[existingIndex] = file;
-            return;
+    async addIfNotExists(file: File): Promise<void> {
+        const existingFile = await this.findByPath(file.absolutePath!);
+        if (!existingFile) {
+            await this.add(file);
         }
-
-        this.files.push(file);
     }
 
     async getAll(): Promise<File[]> {
-        return [...this.files];
+        const tableName = File.getTableName();
+        const query = `* FROM ${tableName}`;
+        const result = JSON.parse(JSON.stringify(await this.db.select<any>(query, [])));
+        console.log(result);
+        return result.map((row: any) => new File(
+            row['name'],
+            row['absolutepath'],
+            row['size'],
+            row['type'],
+            new Date(row['createdat']),
+            new Date(row['updatedat']),
+            row['id']
+        ));
     }
 }
 

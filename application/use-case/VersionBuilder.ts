@@ -13,12 +13,11 @@ export class VersionBuilder {
         private readonly versionLineRepo: IVersionLineRepository
     ) {}
 
-    async buildFromLines(file: File, lines: string[]): Promise<Version | undefined> {
+    async buildFromLines(lines: string[]): Promise<Version | undefined> {
         const lastVersion = await this.versionRepo.getLast();
         const newVersionNumber = lastVersion ? lastVersion.versionNumber + 1 : 1;
 
         const newVersion = new Version(
-            file,
             newVersionNumber,
             new Date(),
             [], 
@@ -36,7 +35,7 @@ export class VersionBuilder {
             let hash = await this.hashRepo.findByValue(hashValue);
             if (!hash) {
                 hash = new Hash(hashValue, lineContent);
-                await this.hashRepo.add(hash);
+                await this.hashRepo.addIfNotExists(hash);
             }
 
             if (lastVersion) {
@@ -47,7 +46,7 @@ export class VersionBuilder {
             }
             newVersion.lines.push(lineNumber);
             const versionLine = new VersionLine(newVersion, lineNumber, hashValue);
-            await this.versionLineRepo.add(versionLine);
+            await this.versionLineRepo.addIfNotExists(versionLine);
             lineNumbersPresent.push(lineNumber);
         }
         if (lineNumbersPresent.length === 0) {
@@ -55,7 +54,6 @@ export class VersionBuilder {
         }
 
         const finalVersion = new Version(
-            file,
             newVersion.versionNumber,
             newVersion.createdAt,
             lineNumbersPresent,
@@ -63,7 +61,7 @@ export class VersionBuilder {
             newVersion.updatedAt
         );
 
-        this.versionRepo.add(finalVersion);
+        this.versionRepo.addIfNotExists(finalVersion);
 
         return finalVersion;
     }

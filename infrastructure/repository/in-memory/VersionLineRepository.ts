@@ -18,6 +18,12 @@ export class VersionLineRepository implements IVersionLineRepository {
          this.versionLines.push(versionLine);
 
     }
+    async addIfNotExists(versionLine: VersionLine): Promise<void> {
+        const existingVersionLine = await this.findByVersionAndLine(versionLine.version.versionNumber, versionLine.lineNumber);
+        if (!existingVersionLine) {
+            this.versionLines.push(versionLine);
+        }
+    }
 
     async getAll(): Promise<VersionLine[]> {
         return this.versionLines;

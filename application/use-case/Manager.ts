@@ -4,13 +4,21 @@ import { VersionLine } from "../../domain/file/entities/VersionLine";
 import { Hash } from "../../domain/file/entities/Hash";
 import { IHashRepository } from "../../domain/file/interfaces/read/IHashRepository";
 import { IVersionRepository } from "../../domain/file/interfaces/read/IVersionRepository";
-import { HashRepository } from "../../infrastructure/repository/in-memory/HashRepository";
-import { VersionRepository } from "../../infrastructure/repository/in-memory/VersionRepository";
 import { VersionBuilder } from "./VersionBuilder";
 import { IVersionLineRepository } from "../../domain/file/interfaces/read/IVersionLineRepository";
-import { VersionLineRepository } from "../../infrastructure/repository/in-memory/VersionLineRepository";
 
-export class VersionManager {
+// import { VersionLineRepository } from "../../infrastructure/repository/in-memory/VersionLineRepository";
+// import { FileRepository } from "../../infrastructure/repository/in-memory/FileRepository";
+// import { HashRepository } from "../../infrastructure/repository/in-memory/HashRepository";
+// import { VersionRepository } from "../../infrastructure/repository/in-memory/VersionRepository";
+
+import { VersionLineRepository } from "../../infrastructure/repository/db/read/VersionLineRepository";
+import { FileRepository } from "../../infrastructure/repository/db/read/FileRepository";
+import { HashRepository } from "../../infrastructure/repository/db/read/HashRepository";
+import { VersionRepository } from "../../infrastructure/repository/db/read/VersionRepository";
+
+export class Manager {
+    private fileRepo: FileRepository | undefined;
     private  hashRepo: IHashRepository | undefined;
     private  versionRepo: IVersionRepository | undefined;
     private  versionLineRepo: IVersionLineRepository | undefined;
@@ -20,8 +28,9 @@ export class VersionManager {
         
     }
 
-    static async createInstance(): Promise<VersionManager> {
-        const instance = new VersionManager();
+    static async createInstance(): Promise<Manager> {
+        const instance = new Manager();
+        instance.fileRepo = await FileRepository.initialize();
         instance.versionRepo = await VersionRepository.initialize();
         instance.versionLineRepo = await VersionLineRepository.initialize();
         instance.hashRepo = await HashRepository.initialize();
@@ -30,9 +39,9 @@ export class VersionManager {
     }
     async createVersion(file: File, content: string): Promise<Version | undefined> {
             const lines = content.split('\n');
-            return this.builder?.buildFromLines(file,lines);
+            this.fileRepo?.addIfNotExists(file);
+            return this.builder?.buildFromLines(lines);
        
-        
     }
 
     async getVersionContent(versionNumber: number): Promise<string | undefined>  {
@@ -104,5 +113,11 @@ export class VersionManager {
             throw new Error("Version line repository is not initialized.");
         }
         return await this.versionLineRepo.getAll();
+    }
+    async getAllFiles(): Promise<File[]> {
+        if (!this.fileRepo) {
+            throw new Error("File repository is not initialized.");
+        }
+        return await this.fileRepo.getAll();
     }
 }

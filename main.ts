@@ -1,5 +1,5 @@
 
-import { VersionManager } from "./application/use-case/VersionManager";
+import { Manager } from "./application/use-case/Manager";
 import { PostgresDatabase } from "./infrastructure/database/sql/PostgresDatabase";
 import { LocalManager } from "./infrastructure/filesystem/LocalManager";
 import { File } from "./domain/file/entities/File";
@@ -29,7 +29,7 @@ const file1Entity= new File(await filemanager.getFileName(file1), await filemana
 const file2Entity= new File(await filemanager.getFileName(file2), await filemanager.getFilePath(file2), await filemanager.getFileSize(file2), await filemanager.getFileExtension(file2), await filemanager.getFileCreationTime(file2), await filemanager.getFileLastModifiedTime(file2));
 const file3Entity= new File(await filemanager.getFileName(file3), await filemanager.getFilePath(file3), await filemanager.getFileSize(file3), await filemanager.getFileExtension(file3), await filemanager.getFileCreationTime(file3), await filemanager.getFileLastModifiedTime(file3));
 
-const manager = await VersionManager.createInstance();
+const manager = await Manager.createInstance();
 
 const version1 = await manager.createVersion(file1Entity, await filemanager.readFile(file1));
 const version2 = await manager.createVersion(file2Entity, await filemanager.readFile(file2));
@@ -58,14 +58,11 @@ console.log(
     "\n\n\n",
 );
 
+
 console.log(
     "\n\n\n====\n",
-    file1Entity,
-    "\nentity\n\n\n====\n",
-    file2Entity,
-    "\nentity\n\n\n====\n",
-    file3Entity,
-    "\nentity\n\n\n",
+    await manager.getAllFiles(),
+    "\nAll Files",
 )
 
 // const database = new PostgresDatabase();
