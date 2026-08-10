@@ -49,6 +49,16 @@ export class VersionRepository implements IVersionRepository {
         return new Version(result[0].version_number, result[0].created_at, result[0].lines, result[0].total_lines, result[0].updated_at);
     }
 
+    async getById(fileId: number, versionNumber: number): Promise<Version | undefined> {
+        const tableName = Version.getTableName();
+        const sql = `* FROM ${tableName} WHERE id = $1 AND version_number = $2`;
+        const result = await this.database.select<any[]>(sql, [fileId, versionNumber]);
+        if (result.length === 0) {
+            return undefined;
+        }
+        return new Version(result[0].version_number, result[0].created_at, result[0].lines, result[0].total_lines, result[0].updated_at);
+    }
+
     async getAll(): Promise<Version[]> {
         const tableName = Version.getTableName();
         const sql = `* FROM ${tableName} ORDER BY version_number ASC`;

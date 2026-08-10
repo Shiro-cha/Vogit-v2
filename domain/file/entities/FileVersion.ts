@@ -1,10 +1,10 @@
 import { File } from "./File";
 import { Version } from "./Version";
 export class FileVersion {
-    readonly file: File 
-    readonly version: Version
+    readonly file: File | undefined;
+    readonly version: Version | undefined
 
-    constructor(file: File, version: Version) {
+    constructor(file: File, version: Version | undefined) {
         this.file = file;
         this.version = version;
     }

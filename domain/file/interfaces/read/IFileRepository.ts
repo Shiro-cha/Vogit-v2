@@ -1,7 +1,12 @@
 import { File } from "../../entities/File";
-export interface IFileRepository {
-    findByPath(path: string): Promise<File | undefined>;
-    add(file: File): Promise<void>;
-    addIfNotExists(file: File): Promise<void>;
-    getAll(): Promise<File[]>;
+export abstract class IFileRepository {
+    abstract findByPath(path: string): Promise<File | undefined>;
+    abstract add(file: File): Promise<void>;
+    abstract addIfNotExists(file: File): Promise<void>;
+    abstract getAll(): Promise<File[]>;
+    abstract getById(fileId: number, versionNumber: number): Promise<File | undefined>;
+
+    static async initialize(): Promise<IFileRepository> {
+        throw new Error("Method not implemented.");
+    }
 }

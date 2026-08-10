@@ -16,9 +16,11 @@ import { VersionLineRepository } from "../../infrastructure/repository/db/read/V
 import { FileRepository } from "../../infrastructure/repository/db/read/FileRepository";
 import { HashRepository } from "../../infrastructure/repository/db/read/HashRepository";
 import { VersionRepository } from "../../infrastructure/repository/db/read/VersionRepository";
+import { FileVersionRepository } from "../../infrastructure/repository/in-memory/FileVersionRepository";
 
 export class Manager {
     private fileRepo: FileRepository | undefined;
+    private fileVersionRepo: FileVersionRepository | undefined;
     private  hashRepo: IHashRepository | undefined;
     private  versionRepo: IVersionRepository | undefined;
     private  versionLineRepo: IVersionLineRepository | undefined;
@@ -34,14 +36,23 @@ export class Manager {
         instance.versionRepo = await VersionRepository.initialize();
         instance.versionLineRepo = await VersionLineRepository.initialize();
         instance.hashRepo = await HashRepository.initialize();
+        instance.fileVersionRepo = await FileVersionRepository.initialize();
         instance.builder = new VersionBuilder(instance.hashRepo, instance.versionRepo, instance.versionLineRepo);
         return instance;
     }
     async createVersion(file: File, content: string): Promise<Version | undefined> {
             const lines = content.split('\n');
-            this.fileRepo?.addIfNotExists(file);
             return this.builder?.buildFromLines(lines);
        
+    }
+
+    async createFileVersion(file: File, content: string): Promise<Version | undefined> {
+        const version = await this.createVersion(file, content);
+        if (version && this.fileVersionRepo) {
+            await this.fileRepo?.addIfNotExists(file);
+            await this.fileVersionRepo.addIfNotExists({ file, version });
+        }
+        return version;
     }
 
     async getVersionContent(versionNumber: number): Promise<string | undefined>  {
@@ -80,6 +91,24 @@ export class Manager {
         }
         return contentLines.join('\n');
     }  
+
+    async getFileVersions(file: File): Promise<Version[] | undefined> {
+        if (!this.fileVersionRepo) {
+            throw new Error("File version repository is not initialized.");
+        }
+        const fileVersion = await this.fileVersionRepo.findByFile(file);
+        if (!fileVersion) {
+            return undefined;
+        }
+        return [fileVersion.version];
+    }
+    async getFileLatestVersion(file: File): Promise<Version | undefined> {
+        if (!this.fileVersionRepo) {
+            throw new Error("File version repository is not initialized.");
+        }
+        return await this.fileVersionRepo.getLastVersionForFile(file);
+
+    }
 
     private async getLineLatestVersion(lineNumber: number, currentVersionNumber: number): Promise<Version | undefined> {
         if (!this.versionLineRepo || !this.versionRepo) {

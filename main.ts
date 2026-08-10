@@ -31,39 +31,27 @@ const file3Entity= new File(await filemanager.getFileName(file3), await filemana
 
 const manager = await Manager.createInstance();
 
-const version1 = await manager.createVersion(file1Entity, await filemanager.readFile(file1));
-const version2 = await manager.createVersion(file2Entity, await filemanager.readFile(file2));
-const version3 = await manager.createVersion(file3Entity, await filemanager.readFile(file3));
+const version1 = await manager.createFileVersion(file1Entity, await filemanager.readFile(file1));
+const version2 = await manager.createFileVersion(file2Entity, await filemanager.readFile(file2));
+const version3 = await manager.createFileVersion(file3Entity, await filemanager.readFile(file3));
 
-console.log(
-    "\n\n\n",
-    version1?.lines,
-    "\n\n\n",
-    version2?.lines,
-    "\n\n\n",
-    version3?.lines,
-    "\n\n\n",
-);
 
-console.log(
-    "\n\n\n====\n",
-    version1 ? await manager.getVersionContent(version1.versionNumber) : undefined,
-    "\nVersion 1 Content",
-    "\n\n\n====\n",
-    version2 ? await manager.getVersionContent(version2.versionNumber) : undefined,
-    "\nVersion 2 Content",
-    "\n\n\n====\n",
-    version3 ? await manager.getVersionContent(version3.versionNumber) : undefined,
-    "\nVersion 3 Content",
-    "\n\n\n",
-);
+
+
 
 
 console.log(
     "\n\n\n====\n",
-    await manager.getAllFiles(),
-    "\nAll Files",
+    await manager.getFileVersions(file1Entity),
+    "\nFile 1 Versions",
 )
+
+console.log(
+    "\n\n\n====\n",
+    await manager.getVersionContent(await manager.getFileLatestVersion(file1Entity)?.then(v => v?.versionNumber) || 0),
+    "\nFile 1 Latest Version Content",
+)
+
 
 // const database = new PostgresDatabase();
 // database.query("SELECT * FROM information_schema.tables").then((result) => {

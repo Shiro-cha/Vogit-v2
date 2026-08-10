@@ -48,6 +48,25 @@ export class FileRepository implements IFileRepository {
         }
     }
 
+    async getById(fileId: number, versionNumber: number): Promise<File | undefined> {
+        const tableName = File.getTableName();
+        const query = `* FROM ${tableName} WHERE id = $1`;
+        const result = await this.db.select<any>(query, [fileId]);
+        if (result.length === 0) {
+            return undefined;
+        }
+        const file = new File(
+            result[0].name,
+            result[0].absolutepath,
+            result[0].size,
+            result[0].type,
+            new Date(result[0].createdat),
+            new Date(result[0].updatedat),
+            result[0].id
+        );
+        return file;
+    }
+
     async getAll(): Promise<File[]> {
         const tableName = File.getTableName();
         const query = `* FROM ${tableName}`;

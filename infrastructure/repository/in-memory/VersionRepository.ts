@@ -27,6 +27,9 @@ export class VersionRepository implements IVersionRepository {
     async getByVersionNumber(versionNumber: number): Promise<Version | undefined> {
         return this.versions.find(v => v.versionNumber === versionNumber);
     }
+    async getById(fileId: number, versionNumber: number): Promise<Version | undefined> {
+        return this.versions.find(v => v.versionNumber === versionNumber);
+    }   
 
     async getAll(): Promise<Version[]> {
         return this.versions;
