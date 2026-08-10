@@ -11,12 +11,13 @@ import { IVersionLineRepository } from "../../domain/file/interfaces/read/IVersi
 // import { FileRepository } from "../../infrastructure/repository/in-memory/FileRepository";
 // import { HashRepository } from "../../infrastructure/repository/in-memory/HashRepository";
 // import { VersionRepository } from "../../infrastructure/repository/in-memory/VersionRepository";
+//import { FileVersionRepository } from "../../infrastructure/repository/in-memory/FileVersionRepository";
 
 import { VersionLineRepository } from "../../infrastructure/repository/db/read/VersionLineRepository";
 import { FileRepository } from "../../infrastructure/repository/db/read/FileRepository";
 import { HashRepository } from "../../infrastructure/repository/db/read/HashRepository";
 import { VersionRepository } from "../../infrastructure/repository/db/read/VersionRepository";
-import { FileVersionRepository } from "../../infrastructure/repository/in-memory/FileVersionRepository";
+import { FileVersionRepository } from "../../infrastructure/repository/db/read/FileVersionRepository";
 
 export class Manager {
     private fileRepo: FileRepository | undefined;
@@ -40,17 +41,19 @@ export class Manager {
         instance.builder = new VersionBuilder(instance.hashRepo, instance.versionRepo, instance.versionLineRepo);
         return instance;
     }
-    async createVersion(file: File, content: string): Promise<Version | undefined> {
+    async createVersion(content: string): Promise<Version | undefined> {
             const lines = content.split('\n');
             return this.builder?.buildFromLines(lines);
        
     }
 
     async createFileVersion(file: File, content: string): Promise<Version | undefined> {
-        const version = await this.createVersion(file, content);
+        const version = await this.createVersion(content);
         if (version && this.fileVersionRepo) {
             await this.fileRepo?.addIfNotExists(file);
-            await this.fileVersionRepo.addIfNotExists({ file, version });
+            const dbFile = await this.fileRepo?.findByPath(file.absolutePath!);
+            console.log("dbFile:", dbFile);
+            await this.fileVersionRepo.addIfNotExists({ file: dbFile || file, version });
         }
         return version;
     }
@@ -100,13 +103,13 @@ export class Manager {
         if (!fileVersion) {
             return undefined;
         }
-        return [fileVersion.version];
+        return fileVersion.version ? [fileVersion.version] : undefined;
     }
-    async getFileLatestVersion(file: File): Promise<Version | undefined> {
+    async getFileLatestVersion(file: File | undefined): Promise<Version | undefined> {
         if (!this.fileVersionRepo) {
             throw new Error("File version repository is not initialized.");
         }
-        return await this.fileVersionRepo.getLastVersionForFile(file);
+        return await this.fileVersionRepo.getLastVersionForFile(file!);
 
     }
 
@@ -148,5 +151,12 @@ export class Manager {
             throw new Error("File repository is not initialized.");
         }
         return await this.fileRepo.getAll();
+    }
+
+    async getFileByPath(path: string): Promise<File | undefined> {
+        if (!this.fileRepo) {
+            throw new Error("File repository is not initialized.");
+        }
+        return await this.fileRepo.findByPath(path);
     }
 }

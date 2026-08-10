@@ -2,7 +2,7 @@ import { Version } from "../../../../domain/file/entities/Version";
 import { IVersionRepository } from "../../../../domain/file/interfaces/read/IVersionRepository";
 import { PostgresDatabase } from "../../../database/sql/PostgresDatabase";
 
-export class VersionRepository implements IVersionRepository {
+export class VersionRepository extends IVersionRepository {
     private readonly database = new PostgresDatabase();
 
 
@@ -13,7 +13,9 @@ export class VersionRepository implements IVersionRepository {
         await instance.database.createTableIfNotExists(tableName, columns);
         return instance;
     }
-     private constructor() {}
+     private constructor() {
+        super();
+    }
 
     async add(version: Version): Promise<void> {
         const tableName = Version.getTableName();

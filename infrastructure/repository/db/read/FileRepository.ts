@@ -3,10 +3,11 @@ import { IFileRepository } from "../../../../domain/file/interfaces/read/IFileRe
 import { IDatabase } from "../../../database/IDatabase";
 import { PostgresDatabase } from "../../../database/sql/PostgresDatabase";
 
-export class FileRepository implements IFileRepository {
+export class FileRepository extends IFileRepository {
     private db: IDatabase;
 
     private constructor() {
+        super();
         this.db = new PostgresDatabase();
     }   
 
@@ -25,11 +26,12 @@ export class FileRepository implements IFileRepository {
         }
         const file = new File(
             result[0].name,
-            result[0].absolutePath,
+            result[0].absolutepath,
             result[0].size,
             result[0].type,
-            new Date(result[0].createdAt),
-            new Date(result[0].updatedAt)
+            new Date(result[0].createdat),
+            new Date(result[0].updatedat),
+            result[0].id
         );
         return file;
     }

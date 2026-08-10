@@ -14,13 +14,13 @@ export class FileVersionRepository implements IFileVersionRepository {
         return instance;
     }
     async findByFile(file: File): Promise<FileVersion | undefined> {
-       return this.fileVersions.find(fv => fv.file.id === file.id);
+       return this.fileVersions.find(fv => fv.file!.id === file.id);
     }
     async add(fileVersion: FileVersion): Promise<void> {
         this.fileVersions.push(fileVersion);
     }
     async addIfNotExists(fileVersion: FileVersion): Promise<void> {
-        if (!await this.findByFile(fileVersion.file)) {
+        if (!await this.findByFile(fileVersion.file!)) {
             await this.add(fileVersion);
         }
     }
@@ -28,12 +28,12 @@ export class FileVersionRepository implements IFileVersionRepository {
         return this.fileVersions;
     }
     async getLastVersionForFile(file: File): Promise<Version | undefined> {
-        const versionsForFile = this.fileVersions.filter(fv => fv.file.id === file.id);
+        const versionsForFile = this.fileVersions.filter(fv => fv.file!.id === file.id);
         if (versionsForFile.length === 0) {
             return undefined;
         }
         return versionsForFile.reduce((latest, current) => {
-            return current.version.versionNumber > latest.version.versionNumber ? current : latest;
+            return current.version!.versionNumber > latest.version!.versionNumber ? current : latest;
         }).version;
     }
 }

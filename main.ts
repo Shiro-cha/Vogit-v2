@@ -38,17 +38,18 @@ const version3 = await manager.createFileVersion(file3Entity, await filemanager.
 
 
 
-
+const dbfile1 = await manager.getFileByPath(file1Entity.absolutePath!);
 
 console.log(
     "\n\n\n====\n",
-    await manager.getFileVersions(file1Entity),
+    await manager.getFileVersions(dbfile1!),
     "\nFile 1 Versions",
 )
 
+
 console.log(
     "\n\n\n====\n",
-    await manager.getVersionContent(await manager.getFileLatestVersion(file1Entity)?.then(v => v?.versionNumber) || 0),
+    await manager.getVersionContent(await manager.getFileLatestVersion(dbfile1)?.then(v => v?.versionNumber) || 0),
     "\nFile 1 Latest Version Content",
 )
 

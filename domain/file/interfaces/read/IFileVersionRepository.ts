@@ -8,8 +8,10 @@ export abstract class IFileVersionRepository {
     abstract getAll(): Promise<FileVersion[]>;
     abstract getLastVersionForFile(file: File): Promise<Version | undefined>;
 
-    static async initialize(): Promise<IFileVersionRepository> {
-        throw new Error("Method not implemented.");
-    }
+    
 
+}
+
+export interface IFileVersionRepositoryStatic {
+    initialize(): Promise<IFileVersionRepository>;
 }
