@@ -1,64 +1,6 @@
+import { createServer } from "./presentation/http/server";
 
-import { Manager } from "./application/use-case/Manager";
-import { PostgresDatabase } from "./infrastructure/database/sql/PostgresDatabase";
-import { LocalManager } from "./infrastructure/filesystem/LocalManager";
-import { File } from "./domain/file/entities/File";
-try {
-
-const content1 = `
-B
-A
-C`;
-const content2 = `
-B
-A
-A
-D`;
-const content3 = `
-B
-A
-A
-Y`;
-const filemanager = new LocalManager();
-const file1 = await filemanager.createFile("test1.txt", content1);
-const file2 = await filemanager.createFile("test2.txt", content2);
-const file3 = await filemanager.createFile("test3.txt", content3);
-
-
-const file1Entity= new File(await filemanager.getFileName(file1), await filemanager.getFilePath(file1), await filemanager.getFileSize(file1), await filemanager.getFileExtension(file1), await filemanager.getFileCreationTime(file1), await filemanager.getFileLastModifiedTime(file1));
-const file2Entity= new File(await filemanager.getFileName(file2), await filemanager.getFilePath(file2), await filemanager.getFileSize(file2), await filemanager.getFileExtension(file2), await filemanager.getFileCreationTime(file2), await filemanager.getFileLastModifiedTime(file2));
-const file3Entity= new File(await filemanager.getFileName(file3), await filemanager.getFilePath(file3), await filemanager.getFileSize(file3), await filemanager.getFileExtension(file3), await filemanager.getFileCreationTime(file3), await filemanager.getFileLastModifiedTime(file3));
-
-const manager = await Manager.createInstance();
-
-const version1 = await manager.createFileVersion(file1Entity, await filemanager.readFile(file1));
-const version2 = await manager.createFileVersion(file2Entity, await filemanager.readFile(file2));
-const version3 = await manager.createFileVersion(file3Entity, await filemanager.readFile(file3));
-
-
-
-
-const dbfile1 = await manager.getFileByPath(file1Entity.absolutePath!);
-
-console.log(
-    "\n\n\n====\n",
-    await manager.getFileVersions(dbfile1!),
-    "\nFile 1 Versions",
-)
-
-
-console.log(
-    "\n\n\n====\n",
-    await manager.getVersionContent(await manager.getFileLatestVersion(dbfile1)?.then(v => v?.versionNumber) || 0),
-    "\nFile 1 Latest Version Content",
-)
-
-
-// const database = new PostgresDatabase();
-// database.query("SELECT * FROM information_schema.tables").then((result) => {
-//     console.log("Database query result:", result);
-// });
-
-} catch (error) {
-    console.error("Error:", error);
-}
+createServer().catch(error => {
+    console.error("Failed to start Vogit:", error);
+    process.exit(1);
+});

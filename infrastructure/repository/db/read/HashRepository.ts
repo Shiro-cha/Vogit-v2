@@ -4,7 +4,7 @@ import { IDatabase } from "../../../database/IDatabase";
 import { PostgresDatabase } from "../../../database/sql/PostgresDatabase";
 
 type HashRow = {
-    hashValue: string;
+    hashvalue: string;
     text: string;
 };
 
@@ -15,15 +15,16 @@ export class HashRepository implements IHashRepository {
 
     static async initialize(): Promise<HashRepository> {
         const instance = new HashRepository();
-        await instance.db.createTableIfNotExists(Hash.getTableName(), "hashValue VARCHAR(255) PRIMARY KEY, text TEXT");
+        await instance.db.createTableIfNotExists(Hash.getTableName(), "hashvalue VARCHAR(64) PRIMARY KEY, text TEXT");
         return instance;
     }
+
     async add(hash: Hash): Promise<void> {
         const tableName = Hash.getTableName();
-        const query = `(hashValue, text) VALUES ($1, $2)`;
-        await this.db.createTableIfNotExists(tableName, "hashValue VARCHAR(255) PRIMARY KEY, text TEXT");
+        const query = `(hashvalue, text) VALUES ($1, $2)`;
         await this.db.insert(tableName, query, [hash.hashValue, hash.text]);
     }
+
     async addIfNotExists(hash: Hash): Promise<void> {
         const existingHash = await this.findByValue(hash.hashValue);
         if (!existingHash) {
@@ -33,19 +34,19 @@ export class HashRepository implements IHashRepository {
 
     async findByValue(hash: string): Promise<Hash | undefined> {
         const tableName = Hash.getTableName();
-        const query = `* FROM ${tableName} WHERE hashValue = $1`;
+        const query = `* FROM ${tableName} WHERE hashvalue = $1`;
         const result = await this.db.select<HashRow>(query, [hash]);
         if (result.length === 0) {
             return undefined;
         }
         const [row] = result;
-        return new Hash(row.hashValue, row.text);
+        return new Hash(row.hashvalue, row.text);
     }
 
     async getAll(): Promise<Hash[]> {
         const tableName = Hash.getTableName();
         const query = `* FROM ${tableName}`;
-        const result = await this.db.select<HashRow>(query);
-        return result.map(row => new Hash(row.hashValue, row.text));
+        const result = await this.db.select<HashRow>(query, []);
+        return result.map(row => new Hash(row.hashvalue, row.text));
     }
 }

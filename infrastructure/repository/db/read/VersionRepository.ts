@@ -5,66 +5,80 @@ import { PostgresDatabase } from "../../../database/sql/PostgresDatabase";
 export class VersionRepository extends IVersionRepository {
     private readonly database = new PostgresDatabase();
 
-
-    static async initialize() {
-        const instance = new VersionRepository();
-        const tableName = Version.getTableName();
-        const columns = "id SERIAL PRIMARY KEY, version_number INT, created_at TIMESTAMP, updated_at TIMESTAMP, lines INT[], total_lines INT";
-        await instance.database.createTableIfNotExists(tableName, columns);
-        return instance;
-    }
-     private constructor() {
+    private constructor() {
         super();
     }
 
-    async add(version: Version): Promise<void> {
+    static async initialize(): Promise<VersionRepository> {
+        const instance = new VersionRepository();
         const tableName = Version.getTableName();
-  
-        const sql = `(version_number, created_at, updated_at, lines, total_lines) VALUES ($1, $2, $3, $4, $5)`;
-        const params = [version.versionNumber, version.createdAt, version.updatedAt || null, version.lines, version.totalLines];
+        const columns =
+            "id SERIAL PRIMARY KEY, file_id INT, version_number INT, created_at TIMESTAMP, updated_at TIMESTAMP, lines INT[], total_lines INT, UNIQUE(file_id, version_number)";
+        await instance.database.createTableIfNotExists(tableName, columns);
+        return instance;
+    }
+
+    private toEntity(row: any): Version {
+        return new Version(
+            row.file_id,
+            row.version_number,
+            new Date(row.created_at),
+            row.lines ?? [],
+            row.total_lines,
+            row.updated_at ? new Date(row.updated_at) : undefined,
+            row.id
+        );
+    }
+
+    async add(version: Version): Promise<Version> {
+        const tableName = Version.getTableName();
+        const sql = `(file_id, version_number, created_at, updated_at, lines, total_lines) VALUES ($1, $2, $3, $4, $5, $6)`;
+        const params = [
+            version.fileId,
+            version.versionNumber,
+            version.createdAt,
+            version.updatedAt || null,
+            version.lines,
+            version.totalLines,
+        ];
         await this.database.insert(tableName, sql, params);
-    }
-    async addIfNotExists(version: Version): Promise<void> {
-        const existingVersion = await this.getByVersionNumber(version.versionNumber);
-        if (!existingVersion) {
-            await this.add(version);
-        }
+        const stored = await this.getByVersionNumber(version.fileId, version.versionNumber);
+        return stored ?? version;
     }
 
-     async getLast(): Promise<Version | undefined> {
-        const tableName = Version.getTableName();
-        const sql = `* FROM ${tableName} ORDER BY version_number DESC LIMIT 1`;
-        const result = await this.database.select<any[]>(sql);
-        if (result.length === 0) {
-            return undefined;
+    async addIfNotExists(version: Version): Promise<Version> {
+        const existing = await this.getByVersionNumber(version.fileId, version.versionNumber);
+        if (existing) {
+            return existing;
         }
-        return new Version(result[0].version_number, result[0].created_at, result[0].lines, result[0].total_lines, result[0].updated_at);
+        return this.add(version);
     }
 
-    async getByVersionNumber(versionNumber: number): Promise<Version | undefined> {
+    async getLastForFile(fileId: number): Promise<Version | undefined> {
         const tableName = Version.getTableName();
-        const sql = `* FROM ${tableName} WHERE version_number = $1`;
-        const result = await this.database.select<any[]>(sql, [versionNumber]);
-        if (result.length === 0) {
-            return undefined;
-        }
-        return new Version(result[0].version_number, result[0].created_at, result[0].lines, result[0].total_lines, result[0].updated_at);
+        const sql = `* FROM ${tableName} WHERE file_id = $1 ORDER BY version_number DESC LIMIT 1`;
+        const result = await this.database.select<any>(sql, [fileId]);
+        return result.length === 0 ? undefined : this.toEntity(result[0]);
     }
 
-    async getById(fileId: number, versionNumber: number): Promise<Version | undefined> {
+    async getByVersionNumber(fileId: number, versionNumber: number): Promise<Version | undefined> {
         const tableName = Version.getTableName();
-        const sql = `* FROM ${tableName} WHERE id = $1 AND version_number = $2`;
-        const result = await this.database.select<any[]>(sql, [fileId, versionNumber]);
-        if (result.length === 0) {
-            return undefined;
-        }
-        return new Version(result[0].version_number, result[0].created_at, result[0].lines, result[0].total_lines, result[0].updated_at);
+        const sql = `* FROM ${tableName} WHERE file_id = $1 AND version_number = $2`;
+        const result = await this.database.select<any>(sql, [fileId, versionNumber]);
+        return result.length === 0 ? undefined : this.toEntity(result[0]);
+    }
+
+    async getAllForFile(fileId: number): Promise<Version[]> {
+        const tableName = Version.getTableName();
+        const sql = `* FROM ${tableName} WHERE file_id = $1 ORDER BY version_number ASC`;
+        const result = await this.database.select<any>(sql, [fileId]);
+        return result.map((row: any) => this.toEntity(row));
     }
 
     async getAll(): Promise<Version[]> {
         const tableName = Version.getTableName();
-        const sql = `* FROM ${tableName} ORDER BY version_number ASC`;
-        const result = await this.database.select<any[]>(sql);
-        return result.map((row) => new Version(row.version_number, row.created_at, row.lines, row.total_lines, row.updated_at));
+        const sql = `* FROM ${tableName} ORDER BY file_id ASC, version_number ASC`;
+        const result = await this.database.select<any>(sql, []);
+        return result.map((row: any) => this.toEntity(row));
     }
-};
+}

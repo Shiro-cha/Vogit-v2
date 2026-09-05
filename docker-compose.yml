@@ -6,6 +6,10 @@ services:
       - .:/app
     environment:
       DATABASE_URL: postgresql://vogit_user:vogit_password@db:5432/vogit_db
+      REPO_DRIVER: postgres
+      PORT: 3000
+    ports:
+      - "3000:3000"
     command: bun run start
     depends_on:
       - db

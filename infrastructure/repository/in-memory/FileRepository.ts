@@ -1,27 +1,38 @@
 import { IFileRepository } from "../../../domain/file/interfaces/read/IFileRepository";
 import { File } from "../../../domain/file/entities/File";
 
-export class FileRepository implements IFileRepository {
+export class FileRepository extends IFileRepository {
     private files: File[] = [];
+    private nextId = 1;
 
-    private constructor() {}
+    private constructor() {
+        super();
+    }
 
     static async initialize(): Promise<FileRepository> {
-        const instance = new FileRepository();
-        return instance;
+        return new FileRepository();
     }
+
     async findByPath(path: string): Promise<File | undefined> {
         return this.files.find(file => file.absolutePath === path);
     }
 
     async add(file: File): Promise<void> {
+        if (file.id === undefined) {
+            file.setId(this.nextId++);
+        }
         this.files.push(file);
     }
+
     async addIfNotExists(file: File): Promise<void> {
         const existingFile = await this.findByPath(file.absolutePath!);
         if (!existingFile) {
-            this.files.push(file);
+            await this.add(file);
         }
+    }
+
+    async getById(fileId: number): Promise<File | undefined> {
+        return this.files.find(f => f.id === fileId);
     }
 
     async getAll(): Promise<File[]> {

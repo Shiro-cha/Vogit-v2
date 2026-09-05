@@ -9,82 +9,70 @@ export class FileRepository extends IFileRepository {
     private constructor() {
         super();
         this.db = new PostgresDatabase();
-    }   
+    }
 
     static async initialize(): Promise<FileRepository> {
         const instance = new FileRepository();
-        await instance.db.createTableIfNotExists(File.getTableName(), "id SERIAL PRIMARY KEY, absolutePath TEXT, name TEXT, size BIGINT, type TEXT, createdAt TIMESTAMP, updatedAt TIMESTAMP");
+        await instance.db.createTableIfNotExists(
+            File.getTableName(),
+            "id SERIAL PRIMARY KEY, absolutepath TEXT UNIQUE, name TEXT, size BIGINT, type TEXT, createdat TIMESTAMP, updatedat TIMESTAMP"
+        );
         return instance;
     }
 
-    async findByPath(path: string): Promise<File | undefined> {
-        const tableName = File.getTableName();
-        const query = `* FROM ${tableName} WHERE absolutePath = $1`;
-        const result = await this.db.select<any>(query, [path]);
-        if (result.length === 0) {
-            return undefined;
-        }
-        const file = new File(
-            result[0].name,
-            result[0].absolutepath,
-            result[0].size,
-            result[0].type,
-            new Date(result[0].createdat),
-            new Date(result[0].updatedat),
-            result[0].id
+    private toEntity(row: any): File {
+        return new File(
+            row.name,
+            row.absolutepath,
+            Number(row.size),
+            row.type,
+            new Date(row.createdat),
+            row.updatedat ? new Date(row.updatedat) : undefined,
+            row.id
         );
-        return file;
+    }
+
+    async findByPath(path: string): Promise<File | undefined> {
+        const query = `* FROM ${File.getTableName()} WHERE absolutepath = $1`;
+        const result = await this.db.select<any>(query, [path]);
+        return result.length === 0 ? undefined : this.toEntity(result[0]);
     }
 
     async add(file: File): Promise<void> {
         const tableName = File.getTableName();
-        const query = `(absolutePath, name, size, type, createdAt, updatedAt) VALUES ($1, $2, $3, $4, $5, $6)`;
-        await this.db.createTableIfNotExists(tableName, "id SERIAL PRIMARY KEY, absolutePath TEXT, name TEXT, size BIGINT, type TEXT, createdAt TIMESTAMP, updatedAt TIMESTAMP");
-        await this.db.insert(tableName, query, [file.absolutePath, file.name, file.size, file.type, file.createdAt.toISOString(), file.updatedAt?.toISOString()]);
+        const query = `(absolutepath, name, size, type, createdat, updatedat) VALUES ($1, $2, $3, $4, $5, $6)`;
+        await this.db.insert(tableName, query, [
+            file.absolutePath,
+            file.name,
+            file.size,
+            file.type,
+            file.createdAt.toISOString(),
+            file.updatedAt?.toISOString() ?? null,
+        ]);
+        const stored = await this.findByPath(file.absolutePath!);
+        if (stored?.id !== undefined) {
+            file.setId(stored.id);
+        }
     }
 
     async addIfNotExists(file: File): Promise<void> {
         const existingFile = await this.findByPath(file.absolutePath!);
         if (!existingFile) {
             await this.add(file);
+        } else {
+            file.setId(existingFile.id);
         }
     }
 
-    async getById(fileId: number, versionNumber: number): Promise<File | undefined> {
-        const tableName = File.getTableName();
-        const query = `* FROM ${tableName} WHERE id = $1`;
+    async getById(fileId: number): Promise<File | undefined> {
+        const query = `* FROM ${File.getTableName()} WHERE id = $1`;
         const result = await this.db.select<any>(query, [fileId]);
-        if (result.length === 0) {
-            return undefined;
-        }
-        const file = new File(
-            result[0].name,
-            result[0].absolutepath,
-            result[0].size,
-            result[0].type,
-            new Date(result[0].createdat),
-            new Date(result[0].updatedat),
-            result[0].id
-        );
-        return file;
+        return result.length === 0 ? undefined : this.toEntity(result[0]);
     }
 
     async getAll(): Promise<File[]> {
-        const tableName = File.getTableName();
-        const query = `* FROM ${tableName}`;
-        const result = JSON.parse(JSON.stringify(await this.db.select<any>(query, [])));
-        console.log(result);
-        return result.map((row: any) => new File(
-            row['name'],
-            row['absolutepath'],
-            row['size'],
-            row['type'],
-            new Date(row['createdat']),
-            new Date(row['updatedat']),
-            row['id']
-        ));
+        const query = `* FROM ${File.getTableName()}`;
+        const result = await this.db.select<any>(query, []);
+        return result.map((row: any) => this.toEntity(row));
     }
 }
-
-
-

@@ -7,22 +7,36 @@ export class VersionLineRepository implements IVersionLineRepository {
     private constructor() {}
 
     static async initialize(): Promise<VersionLineRepository> {
-        const instance = new VersionLineRepository();
-        return instance;
+        return new VersionLineRepository();
     }
-    async findByVersionAndLine(versionNumber: number, lineNumber: number): Promise<VersionLine | undefined> {
-        return this.versionLines.find(vl => vl.version.versionNumber === versionNumber && vl.lineNumber === lineNumber);
+
+    async findByVersionAndLine(fileId: number, versionNumber: number, lineNumber: number): Promise<VersionLine | undefined> {
+        return this.versionLines.find(vl =>
+            vl.version.fileId === fileId &&
+            vl.version.versionNumber === versionNumber &&
+            vl.lineNumber === lineNumber
+        );
     }
 
     async add(versionLine: VersionLine): Promise<void> {
-         this.versionLines.push(versionLine);
-
+        this.versionLines.push(versionLine);
     }
+
     async addIfNotExists(versionLine: VersionLine): Promise<void> {
-        const existingVersionLine = await this.findByVersionAndLine(versionLine.version.versionNumber, versionLine.lineNumber);
-        if (!existingVersionLine) {
+        const existing = await this.findByVersionAndLine(
+            versionLine.version.fileId,
+            versionLine.version.versionNumber,
+            versionLine.lineNumber
+        );
+        if (!existing) {
             this.versionLines.push(versionLine);
         }
+    }
+
+    async getAllForVersion(fileId: number, versionNumber: number): Promise<VersionLine[]> {
+        return this.versionLines.filter(vl =>
+            vl.version.fileId === fileId && vl.version.versionNumber === versionNumber
+        );
     }
 
     async getAll(): Promise<VersionLine[]> {
